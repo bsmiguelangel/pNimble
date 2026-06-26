@@ -1,5 +1,13 @@
 # pNimble
 
-Run NIMBLE Models in Parallel
+`pNimble` is an `R` package to run NIMBLE models in parallel.
 
-Based on https://github.com/MigueBeneito/pNimble: Routines for a future `pNimble` `R` package.
+Based on https://github.com/MigueBeneito/pNimble 
+
+## Installation
+
+The development version of `pNimble` can be installed from GitHub using the `remotes` package:
+
+```r
+install.packages("remotes")
+remotes::install_github("bsmiguelangel/pNimble")
