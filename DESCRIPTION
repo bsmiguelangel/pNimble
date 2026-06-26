@@ -1,0 +1,18 @@
+Package: pNimble
+Title: Run NIMBLE Models in Parallel
+Version: 1.0.0
+Authors@R: c(
+    person("Miguel Ángel", "Beltrán-Sánchez", , "angel.beltran@uv.es", role = c("aut", "cre")),
+    person("Miguel Ángel", "Martínez-Beneito", , "miguel.a.martinez@uv.es", role = "aut"))
+Description: Runs NIMBLE MCMC chains in parallel and returns posterior samples, summaries and WAIC.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 8.0.0
+Imports: 
+    coda,
+    MCMCvis,
+    nimble,
+    ntfy
+Suggests: 
+    nimbleHMC
