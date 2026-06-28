@@ -113,4 +113,5 @@ fit <- pNimble(code = code,
 fit$samples
 fit$summary
 }
+
 }

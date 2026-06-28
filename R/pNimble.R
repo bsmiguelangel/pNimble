@@ -40,7 +40,6 @@
 #'   `summary = TRUE` and multiple chains are available.}
 #'   \item{WAIC}{WAIC value, if `WAIC = TRUE`.}
 #' }
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -67,6 +66,8 @@
 #' fit$samples
 #' fit$summary
 #' }
+#'
+#' @export
 pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
                     nchains = 3, seeds = NULL, summary = TRUE, monitors = NULL,
                     ntfyAccount = NULL, email = FALSE, WAIC = FALSE, HMC = FALSE,
@@ -76,6 +77,16 @@ pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
 
   # Initial arrangements and checkings
   time.start <- Sys.time()
+
+  # Send notification when the function exits, even if an error occurs
+  on.exit({
+    time.end <- Sys.time()
+    total.time <- as.numeric(time.end) - as.numeric(time.start)
+    notify(time = total.time,
+           email = email,
+           ntfyAccount = ntfyAccount,
+           model = "NIMBLE model")
+  }, add = TRUE)
 
   # Create the control lists when they are not provided by the user
   if (is.null(control.model)) control.model <- list()
@@ -93,6 +104,11 @@ pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
     control.configure$monitors <- monitors
   }
 
+  # Create the remaining control lists when they are not provided by the user
+  if (is.null(control.configure)) control.configure <- list()
+  if (is.null(control.compile)) control.compile <- list()
+  if (is.null(control.build)) control.build <- list()
+
   # Use one seed per chain if seeds are not specified
   if (is.null(seeds)) seeds <- 1:nchains
 
@@ -103,15 +119,19 @@ pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
                  control.model = control.model, control.compile = control.compile,
                  control.configure = control.configure, control.build = control.build)
 
-  # Parallelized call to Nimble
+  # Check that nimbleHMC is available when HMC sampling is requested
+  if (HMC && !requireNamespace("nimbleHMC", quietly = TRUE)) {
+    stop("Package 'nimbleHMC' is required when HMC = TRUE.")
+  }
 
+  # Parallelized call to Nimble
   if (parallel) {
 
     # A cluster with one worker per chain is created
     my.cluster <- parallel::makeCluster(nchains)
 
     # Ensure that the cluster is stopped when the function exits
-    on.exit(parallel::stopCluster(my.cluster))
+    on.exit(parallel::stopCluster(my.cluster), add = TRUE)
 
     # Load NIMBLE in each worker
     parallel::clusterEvalQ(my.cluster, {
@@ -203,20 +223,29 @@ pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
 
   if (WAIC) {
 
-    # Load custom NIMBLE distributions or functions used by the model
-    load_leroux()
+    # Try to calculate WAIC, but return posterior samples if WAIC fails
+    WAIC.result <- tryCatch({
 
-    # Rebuild and compile the model to calculate WAIC from the posterior samples
-    model.nimble <- nimble::nimbleModel(code = code, data = data, constants = constants,
-                                        check = FALSE, calculate = FALSE, buildDerivs = FALSE)
-    cmodel <- nimble::compileNimble(model.nimble)
-    resul2$WAIC <- nimble::calculateWAIC(do.call(rbind, resul2$samples), cmodel)
+      # Load custom NIMBLE distributions or functions used by the model
+      load_leroux()
+
+      # Rebuild and compile the model to calculate WAIC from the posterior samples
+      model.nimble <- nimble::nimbleModel(code = code, data = data, constants = constants,
+                                          check = FALSE, calculate = FALSE, buildDerivs = FALSE)
+      cmodel <- nimble::compileNimble(model.nimble)
+
+      nimble::calculateWAIC(do.call(rbind, resul2$samples), cmodel)
+
+    }, error = function(e) {
+
+      warning("WAIC could not be calculated. Posterior samples are returned without WAIC. ",
+              "Original error: ", conditionMessage(e))
+
+      NA
+    })
+
+    resul2$WAIC <- WAIC.result
   }
-
-  # Compute total running time and send notification if requested
-  time.end <- Sys.time()
-  total.time <- as.numeric(time.end) - as.numeric(time.start)
-  notify(time = total.time, email = email, ntfyAccount = ntfyAccount, model = "NIMBLE model")
 
   return(resul2)
 }
