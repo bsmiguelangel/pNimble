@@ -10,8 +10,6 @@ MCMCproblems(
   Rhat.max = 1.1,
   n.eff.min = 100,
   plot = TRUE,
-  pdf = FALSE,
-  ind = TRUE,
   round = 4,
   ...
 )
@@ -25,7 +23,7 @@ check. If \code{NULL}, all monitored parameters are checked.}
 
 \item{Rhat.max}{Maximum acceptable \code{Rhat} value. Parameters with \code{Rhat}
 greater than this value are identified as problematic. The default is
-\code{1.1}.}
+\code{1.10}.}
 
 \item{n.eff.min}{Minimum acceptable effective sample size. Parameters with
 \code{n.eff} lower than this value are identified as problematic. The default
@@ -34,17 +32,10 @@ is \code{100}.}
 \item{plot}{Logical value. If \code{TRUE}, traceplots are produced for the
 problematic parameters. The default is \code{TRUE}.}
 
-\item{pdf}{Logical value passed to \code{MCMCvis::MCMCtrace()}. If \code{TRUE}, plots
-are saved to a PDF file. The default is \code{FALSE}.}
-
-\item{ind}{Logical value passed to \code{MCMCvis::MCMCtrace()}. If \code{TRUE},
-density lines are shown separately for each chain. The default is \code{TRUE}.}
-
 \item{round}{Number of decimal places used by \code{MCMCvis::MCMCsummary()}.
 The default is \code{4}.}
 
-\item{...}{Additional arguments passed to \code{MCMCvis::MCMCsummary()} and
-\code{MCMCvis::MCMCtrace()}.}
+\item{...}{Additional arguments passed to \code{MCMCvis::MCMCtrace()}.}
 }
 \value{
 A posterior summary table restricted to the parameters with
