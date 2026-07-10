@@ -24,6 +24,7 @@ Main features currently included:
 * Support for replacing default NIMBLE samplers.
 * Optional posterior summaries using `MCMCvis`, with safe error handling so that posterior samples are still returned if summaries cannot be calculated.
 * Optional calculation of WAIC from posterior samples, with safe error handling so that posterior samples are still returned if WAIC cannot be calculated.
+* `MCMCproblems()`, a function to identify parameters with problematic MCMC behaviour and optionally produce traceplots only for those parameters.
 * Notification system using `ntfy`.
 * `dcar_leroux()`, a Leroux CAR density function for use in NIMBLE models.
 * `rcar_leroux()`, the corresponding random generation function required by NIMBLE. Random generation is currently not implemented.
@@ -37,6 +38,7 @@ Main features currently included:
 * Confirmed compatibility with the CRAN version of `nimble`. The development version of `nimble` is no longer required for installing or using `pNimble`.
 * Renamed the `sd.theta` argument in the Leroux CAR distribution to `sd`.
 * Added safe error handling for WAIC and posterior summaries, so that posterior samples are still returned when these calculations fail.
+* Added `MCMCproblems()` to identify parameters with problematic MCMC behaviour and optionally produce traceplots only for those parameters.
 
 ## To do
 
