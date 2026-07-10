@@ -45,6 +45,5 @@ Main features currently included:
 ## To do
 
 * Make the strength of the zero-mean constraint adaptive according to the number of small areas.
-* Ask the `nimble-users` Google Group about the `R CMD check` NOTE caused by assigning `dcar_leroux()` and `rcar_leroux()` to the global environment.
 * Modify `rcar_leroux()` so that it can generate random values from the Leroux CAR distribution.
 * Submit the package to CRAN.
