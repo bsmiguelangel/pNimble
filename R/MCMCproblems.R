@@ -50,9 +50,14 @@ MCMCproblems <- function(object, params = NULL,
   }
 
   # Calculate posterior summaries
-  summary.out <- MCMCvis::MCMCsummary(object = samples,
-                                      params = params,
-                                      round = round)
+  if (is.null(params)) {
+    summary.out <- MCMCvis::MCMCsummary(object = samples,
+                                        round = round)
+  } else {
+    summary.out <- MCMCvis::MCMCsummary(object = samples,
+                                        params = params,
+                                        round = round)
+  }
 
   # Check that required diagnostic columns are available
   if (!all(c("Rhat", "n.eff") %in% colnames(summary.out))) {
@@ -77,9 +82,8 @@ MCMCproblems <- function(object, params = NULL,
   if (plot) {
     MCMCvis::MCMCtrace(object = samples,
                        params = rownames(problematic),
-                       pdf = FALSE, ind = TRUE,
-                       exact = TRUE, ISB = FALSE,
-                       Rhat = TRUE, n.eff = TRUE, ...)
+                       pdf = FALSE, ind = TRUE, exact = TRUE,
+                       ISB = FALSE, Rhat = TRUE, n.eff = TRUE, ...)
   }
 
   return(problematic)
