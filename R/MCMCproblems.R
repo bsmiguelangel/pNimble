@@ -16,20 +16,15 @@
 #'   check. If `NULL`, all monitored parameters are checked.
 #' @param Rhat.max Maximum acceptable `Rhat` value. Parameters with `Rhat`
 #'   greater than this value are identified as problematic. The default is
-#'   `1.1`.
+#'   `1.10`.
 #' @param n.eff.min Minimum acceptable effective sample size. Parameters with
 #'   `n.eff` lower than this value are identified as problematic. The default
 #'   is `100`.
 #' @param plot Logical value. If `TRUE`, traceplots are produced for the
 #'   problematic parameters. The default is `TRUE`.
-#' @param pdf Logical value passed to `MCMCvis::MCMCtrace()`. If `TRUE`, plots
-#'   are saved to a PDF file. The default is `FALSE`.
-#' @param ind Logical value passed to `MCMCvis::MCMCtrace()`. If `TRUE`,
-#'   density lines are shown separately for each chain. The default is `TRUE`.
 #' @param round Number of decimal places used by `MCMCvis::MCMCsummary()`.
 #'   The default is `4`.
-#' @param ... Additional arguments passed to `MCMCvis::MCMCsummary()` and
-#'   `MCMCvis::MCMCtrace()`.
+#' @param ... Additional arguments passed to `MCMCvis::MCMCtrace()`.
 #'
 #' @returns A posterior summary table restricted to the parameters with
 #'   problematic MCMC behaviour. If no problematic parameters are found, an
@@ -44,9 +39,8 @@
 #'
 #' @export
 MCMCproblems <- function(object, params = NULL,
-                         Rhat.max = 1.1, n.eff.min = 100,
-                         plot = TRUE, pdf = FALSE, ind = TRUE,
-                         round = 4, ...) {
+                         Rhat.max = 1.10, n.eff.min = 100,
+                         plot = TRUE, round = 4, ...) {
 
   # Extract posterior samples if a pNimble output object is provided
   if (is.list(object) && !is.null(object$samples)) {
@@ -56,9 +50,9 @@ MCMCproblems <- function(object, params = NULL,
   }
 
   # Calculate posterior summaries
-  summary.out <- MCMCvis::MCMCsummary(object = samples, params = params,
-                                      round = round, exact = TRUE,
-                                      ISB = FALSE, ...)
+  summary.out <- MCMCvis::MCMCsummary(object = samples,
+                                      params = params,
+                                      round = round)
 
   # Check that required diagnostic columns are available
   if (!all(c("Rhat", "n.eff") %in% colnames(summary.out))) {
@@ -83,7 +77,7 @@ MCMCproblems <- function(object, params = NULL,
   if (plot) {
     MCMCvis::MCMCtrace(object = samples,
                        params = rownames(problematic),
-                       pdf = pdf, ind = ind,
+                       pdf = FALSE, ind = TRUE,
                        exact = TRUE, ISB = FALSE,
                        Rhat = TRUE, n.eff = TRUE, ...)
   }
