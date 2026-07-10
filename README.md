@@ -45,6 +45,5 @@ Main features currently included:
 * Make the strength of the zero-mean constraint adaptive according to the number of small areas.
 * Write a helper function to construct the Leroux CAR objects from a neighbourhood matrix `W`, including `from.to` and the eigenvalues of `D - W`.
 * Ask the `nimble-users` Google Group about the `R CMD check` NOTE caused by assigning `dcar_leroux()` and `rcar_leroux()` to the global environment.
-* Add a diagnostic traceplot function that only plots parameters with problematic MCMC behaviour, for example `Rhat > 1.02` or `n.eff < 400`.
 * Modify `rcar_leroux()` so that it can generate random values from the Leroux CAR distribution.
 * Submit the package to CRAN.
