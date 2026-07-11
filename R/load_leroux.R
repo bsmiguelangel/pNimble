@@ -1,19 +1,31 @@
 #' Load Leroux distribution
 #'
-#' Make the Leroux CAR distribution functions available in the global
-#' environment so that NIMBLE can find them when processing BUGS model code.
+#' Register the Leroux CAR distribution so that it can be used in NIMBLE model
+#' code.
 #'
-#' @returns No return value. The function assigns `dcar_leroux` and `rcar_leroux` to the
-#'   global environment.
+#' @returns No return value.
 #'
 #' @keywords internal
 load_leroux <- function() {
 
-  # Deregister previous Leroux definition, if any.
+  # Deregister previous Leroux definition, if any
   suppressWarnings(
     try(nimble::deregisterDistributions("dcar_leroux"), silent = TRUE)
   )
 
-  assign("dcar_leroux", dcar_leroux, envir = globalenv())
-  assign("rcar_leroux", rcar_leroux, envir = globalenv())
+  # Register the Leroux distribution in NIMBLE
+  nimble::registerDistributions(list(
+    dcar_leroux = list(
+      BUGSdist = "dcar_leroux(rho, sd, Lambda, from.to, zero_mean)",
+      types = c(
+        "value = double(1)",
+        "rho = double(0)",
+        "sd = double(0)",
+        "Lambda = double(1)",
+        "from.to = double(2)",
+        "zero_mean = double(0)"
+      ),
+      pqAvail = FALSE
+    )
+  ))
 }

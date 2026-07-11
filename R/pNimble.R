@@ -23,7 +23,7 @@
 #' @param replaceSamplers Optional object passed to `runParallel()` to replace
 #'   default NIMBLE samplers.
 #' @param parallel If `TRUE`, chains are run in parallel using a cluster with
-#'   one worker per chain. If `FALSE`, only one chain is run.
+#'   one worker per chain. If `FALSE`, chains are run sequentially.
 #' @param control.model Optional list of arguments passed to `nimble::nimbleModel()`.
 #' @param control.compile Optional list of arguments passed to `nimble::compileNimble()`.
 #' @param control.configure Optional list of arguments passed to
@@ -138,6 +138,12 @@ pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
       library(nimble)
     })
 
+    # Export the Leroux distribution functions to each worker so that NIMBLE
+    # can find them when processing model code in parallel
+    parallel::clusterExport(my.cluster,
+                            varlist = c("dcar_leroux", "rcar_leroux"),
+                            envir = environment(dcar_leroux))
+
     # Load nimbleHMC in each worker when HMC sampling is requested
     if (HMC) {
       parallel::clusterEvalQ(my.cluster, {
@@ -152,12 +158,12 @@ pNimble <- function(code = NULL, data = NULL, constants = NULL, inits = NULL,
                                  HMC = HMC, replaceSamplers = replaceSamplers, WAIC = WAIC, ...)
 
   } else {
-
-    # Run a single NIMBLE chain without using parallel execution
-    resul <- list(runParallel(seed = seeds[1], inits = inits, control.model = control.model,
-                              control.compile = control.compile, control.configure = control.configure,
-                              control.build = control.build, HMC = HMC, replaceSamplers = replaceSamplers,
-                              WAIC = WAIC, ...))
+    
+    # Run one independent NIMBLE chain for each seed sequentially
+    resul <- lapply(X = seeds, FUN = runParallel, inits = inits,
+                    control.model = control.model, control.compile = control.compile,
+                    control.configure = control.configure, control.build = control.build,
+                    HMC = HMC, replaceSamplers = replaceSamplers, WAIC = WAIC, ...)
   }
 
   # Output arrangement
