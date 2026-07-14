@@ -6,7 +6,7 @@ This package is based on the routines available at https://github.com/MigueBenei
 
 ## Installation
 
-`pNimble` can be installed from GitHub as follows:
+`pNimble` can be installed from `GitHub` as follows:
 
 ```r
 remotes::install_github("bsmiguelangel/pNimble")
@@ -49,4 +49,4 @@ Main features currently included:
 * Consider a new package name, such as `nimbleTools`, as the package now includes tools beyond parallelisation.
 * Extend `lerouxObjects()` so that Leroux CAR objects can also be constructed from the usual `WinBUGS` neighbourhood objects `adj` and `num`, in addition to a binary neighbourhood matrix.
 * Implement exact random generation from the Leroux CAR distribution, following GMRF simulation methods such as those described by Rue and Held.
-* Release version `1.0.0` when the package is ready for submission to CRAN.
+* Release version `1.0.0` when the package is ready for submission to `CRAN`.
