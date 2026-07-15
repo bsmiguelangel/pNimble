@@ -41,9 +41,30 @@ Simple random generation function associated with \code{\link[=dcar_leroux]{dcar
 \details{
 This function is included for compatibility with NIMBLE user-defined
 distributions. It generates independent normal values with mean zero and
-standard deviation \code{0.1}. Therefore, it should be understood as a simple
-generator for initial or simulated values, not as an exact simulation from
-the Leroux CAR distribution.
+standard deviation given by the \code{sd} argument. Therefore, it should be
+understood as a simple generator for initial or simulated values, not as an
+exact simulation from the Leroux CAR distribution.
+}
+\examples{
+\dontrun{
+W <- matrix(c(0, 1, 0,
+              1, 0, 1,
+              0, 1, 0),
+            nrow = 3, byrow = TRUE)
+
+leroux.obj <- lerouxObjects(W)
+
+set.seed(1)
+x <- rcar_leroux(n = 1,
+                 rho = 0.65,
+                 sd = 0.1,
+                 Lambda = leroux.obj$Lambda,
+                 from.to = leroux.obj$from.to,
+                 zero_mean = 1)
+
+x
+}
+
 }
 \seealso{
 \code{\link[=dcar_leroux]{dcar_leroux()}}, \code{\link[=lerouxObjects]{lerouxObjects()}}

@@ -2,14 +2,28 @@
 % Please edit documentation in R/lerouxObjects.R
 \name{lerouxObjects}
 \alias{lerouxObjects}
-\title{Construct Leroux CAR objects from a neighbourhood matrix}
+\title{Construct Leroux CAR objects from neighbourhood structures}
 \usage{
-lerouxObjects(W)
+lerouxObjects(W = NULL, adj = NULL, num = NULL, graph = NULL)
 }
 \arguments{
-\item{W}{Binary neighbourhood matrix. Rows and columns must correspond to
-the same spatial units. The matrix must be square, symmetric, contain only
-\code{0} and \code{1} values, and have a zero diagonal.}
+\item{W}{Optional binary neighbourhood matrix. Rows and columns must
+correspond to the same spatial units. The matrix must be square,
+symmetric, contain only \code{0} and \code{1} values, and have a zero diagonal.}
+
+\item{adj}{Optional vector containing the ID numbers of the adjacent areas
+for each area, using the usual \code{WinBUGS} neighbourhood representation.
+This argument must be provided together with \code{num}.}
+
+\item{num}{Optional vector giving the number of neighbours of each area,
+using the usual \code{WinBUGS} neighbourhood representation. Its length must be
+equal to the total number of areas. This argument must be provided together
+with \code{adj}.}
+
+\item{graph}{Optional graph representation. This can be an object of class
+\code{nb}, such as those produced by \code{spdep::poly2nb()}, a dense or sparse
+adjacency matrix used in INLA models, or an INLA-like graph object with a
+list of neighbours.}
 }
 \value{
 A list with the following elements:
@@ -22,15 +36,27 @@ pairs. Each row contains the indices of two neighbouring spatial units.}
 }
 }
 \description{
-Construct the objects required by \code{dcar_leroux()} from a binary
-neighbourhood matrix.
+Construct the objects required by \code{dcar_leroux()} from different
+neighbourhood representations.
 }
 \details{
-The function takes a binary adjacency matrix \code{W} and returns the matrix of
-distinct neighbouring pairs \code{from.to}, the number of distinct neighbouring
-pairs \code{NDist}, and the eigenvalues \code{Lambda} of
-\eqn{\boldsymbol{D} - \boldsymbol{W}}, where \eqn{\boldsymbol{D}} is the
-diagonal matrix of row sums of \code{W}.
+The function can take a binary adjacency matrix \code{W}, the usual \code{WinBUGS}
+neighbourhood objects \code{adj} and \code{num}, or a graph object.
+
+The argument \code{W} should be a binary adjacency matrix. It can be created
+manually or obtained by converting a neighbourhood object using, for example,
+\code{spdep::nb2mat(Neigh, style = "B", zero.policy = TRUE)}, where \code{Neigh} is an
+object produced by \code{spdep::poly2nb()}. If the \code{poly2nb()} neighbourhood
+object itself is used directly, it should be passed through the \code{graph}
+argument, not through \code{W}.
+
+The function returns the matrix of distinct neighbouring pairs \code{from.to},
+the number of distinct neighbouring pairs \code{NDist}, and the eigenvalues
+\code{Lambda} of \eqn{\boldsymbol{D} - \boldsymbol{W}}, where
+\eqn{\boldsymbol{D}} is the diagonal matrix of row sums of \code{W}.
+
+Exactly one neighbourhood representation must be provided: either \code{W},
+both \code{adj} and \code{num}, or \code{graph}.
 }
 \examples{
 W <- matrix(c(0, 1, 0,
@@ -38,10 +64,47 @@ W <- matrix(c(0, 1, 0,
               0, 1, 0),
             nrow = 3, byrow = TRUE)
 
-leroux.obj <- lerouxObjects(W)
+leroux.obj <- lerouxObjects(W = W)
 leroux.obj$from.to
 leroux.obj$Lambda
 leroux.obj$NDist
+
+adj <- c(2, 1, 3, 2)
+num <- c(1, 2, 1)
+
+leroux.obj <- lerouxObjects(adj = adj, num = num)
+leroux.obj$from.to
+leroux.obj$Lambda
+leroux.obj$NDist
+
+graph <- list(nbs = list(2, c(1, 3), 2))
+class(graph) <- "inla.graph"
+
+leroux.obj <- lerouxObjects(graph = graph)
+leroux.obj$from.to
+leroux.obj$Lambda
+leroux.obj$NDist
+
+\dontrun{
+Neigh <- spdep::poly2nb(cartography)
+
+W <- spdep::nb2mat(Neigh, style = "B", zero.policy = TRUE)
+leroux.obj <- lerouxObjects(W = W)
+leroux.obj$from.to
+leroux.obj$Lambda
+leroux.obj$NDist
+
+leroux.obj <- lerouxObjects(graph = Neigh)
+leroux.obj$from.to
+leroux.obj$Lambda
+leroux.obj$NDist
+
+graph <- INLA::inla.read.graph("graph.file")
+leroux.obj <- lerouxObjects(graph = graph)
+leroux.obj$from.to
+leroux.obj$Lambda
+leroux.obj$NDist
+}
 
 }
 \seealso{

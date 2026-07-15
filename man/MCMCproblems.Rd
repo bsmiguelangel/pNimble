@@ -35,12 +35,15 @@ problematic parameters. The default is \code{TRUE}.}
 \item{round}{Number of decimal places used by \code{MCMCvis::MCMCsummary()}.
 The default is \code{4}.}
 
-\item{...}{Additional arguments passed to \code{MCMCvis::MCMCtrace()}.}
+\item{...}{Additional arguments passed to \code{MCMCvis::MCMCtrace()}, such as
+\code{type}, \code{pdf}, \code{ind}, \code{exact}, \code{ISB}, \code{Rhat} or \code{n.eff}.}
 }
 \value{
 A posterior summary table restricted to the parameters with
-problematic MCMC behaviour. If no problematic parameters are found, an
-empty summary table is returned.
+problematic MCMC behaviour. If the result of \code{MCMCproblems()} is assigned
+to an object and problematic parameters are found, this summary table is
+stored in that object. If no problematic parameters are found, a message is
+printed and \code{NULL} is returned invisibly.
 }
 \description{
 Identify parameters with problematic MCMC behaviour and optionally produce
@@ -51,8 +54,10 @@ The function can be used with posterior samples from \code{pNimble()} or from
 other MCMC models. It calculates posterior summaries using
 \code{MCMCvis::MCMCsummary()} and identifies parameters with \code{Rhat}
 greater than \code{Rhat.max} or effective sample size \code{n.eff} lower than
-\code{n.eff.min}. If requested, traceplots are produced only for the problematic
-parameters using \code{MCMCvis::MCMCtrace()}.
+\code{n.eff.min}. Parameters with no variability, such as reference categories
+of factors, are excluded when they have \code{NaN} in \code{Rhat} and \code{0} in \code{n.eff}.
+If requested, traceplots are produced only for the problematic parameters
+using \code{MCMCvis::MCMCtrace()}.
 }
 \examples{
 \dontrun{
