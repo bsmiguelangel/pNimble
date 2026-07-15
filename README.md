@@ -46,7 +46,6 @@ Main features currently included:
 
 ## To do
 
-* Extend `lerouxObjects()` so that Leroux CAR objects can also be constructed from alternative neighbourhood representations, including the usual `WinBUGS` objects `adj` and `num`, and graph formats commonly used with `INLA`, in addition to a binary neighbourhood matrix `W`.
 * Assess the sensitivity of the adaptation parameter used in the zero-mean constraint, currently fixed at `10`.
 * Implement exact random generation from the Leroux CAR distribution, following GMRF simulation methods such as those described by Rue and Held.
 * Release version `1.0.0` when the package is ready for submission to `CRAN`.
